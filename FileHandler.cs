@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
 namespace uwap.WebFramework.Plugins;
+
 public partial class NotesPlugin : Plugin
 {
     public override byte[]? GetFile(string relPath, string pathPrefix)
