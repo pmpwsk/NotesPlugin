@@ -13,7 +13,9 @@ Changelog: https://uwap.org/changes/notes-plugin
 - Creating folders for notes with unlimited depth
 
 ## Installation
-You can add this plugin to your WF project by installing the NuGet package: [uwap.NotesPlugin](https://www.nuget.org/packages/uwap.NotesPlugin/)<br/>You can also download the source code and reference it in your project file.
+You can add this plugin to your WF project by installing the NuGet package: [uwap.NotesPlugin](https://www.nuget.org/packages/uwap.NotesPlugin/)
+
+You can also download the source code and reference it in your project file.
 
 Once installed, add the following things to your program start code:
 - Add <code>using uwap.WebFramework.Plugins;</code> to the top, otherwise you have to prepend it to <code>NotesPlugin</code>
