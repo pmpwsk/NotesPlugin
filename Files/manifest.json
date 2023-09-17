@@ -1,5 +1,5 @@
 {
-  "name": "Notes (uwap.org)",
+  "name": "Notes ([DOMAIN])",
   "short_name": "Notes",
   "start_url": "[PATH_HOME]",
   "display": "minimal-ui",
@@ -20,7 +20,7 @@
     {
       "src": "[PATH_PREFIX]/icon.ico",
       "type": "image/x-icon",
-      "sizes": "16x16 24x24 32x32 48x48 64x64 72x72 80x80 96x96 128x128 256x256"
+      "sizes": "16x16 24x24 32x32 48x48 64x64 72x72 96x96 128x128 256x256"
     }
   ],
   "launch_handler": {
