@@ -93,24 +93,6 @@ public partial class NotesPlugin : Plugin
                     }
                 }
                 break;
-            case "/save":
-                {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!req.Query.TryGetValue("text", out string? text)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (note.IsFolder) req.Status = 400;
-                    else
-                    {
-                        notes.Lock();
-                        File.WriteAllText($"../Notes/{req.User.Id}-{id}.txt", text);
-                        note.Changed = DateTime.UtcNow;
-                        notes.UnlockSave();
-                        if (note.ParentId == "default")
-                            await req.Write(pluginHome);
-                        else await req.Write(pluginHome + "?id=" + note.ParentId);
-                    }
-                }
-                break;
             case "/rename":
                 {
                     if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
