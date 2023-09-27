@@ -1,4 +1,6 @@
-﻿namespace uwap.WebFramework.Plugins;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace uwap.WebFramework.Plugins;
 
 public partial class NotesPlugin : Plugin
 {
@@ -16,6 +18,23 @@ public partial class NotesPlugin : Plugin
 
         switch (path)
         {
+            case "/save":
+                {
+                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
+                    else if (note.IsFolder) req.Status = 400;
+                    else
+                    {
+                        notes.Lock();
+                        File.WriteAllText($"../Notes/{req.User.Id}-{id}.txt", await req.GetBodyText());
+                        note.Changed = DateTime.UtcNow;
+                        notes.UnlockSave();
+                        if (note.ParentId == "default")
+                            await req.Context.Response.WriteAsync(pluginHome);
+                        else await req.Context.Response.WriteAsync(pluginHome + "?id=" + note.ParentId);
+                    }
+                }
+                break;
             default:
                 req.Status = 404;
                 break;
