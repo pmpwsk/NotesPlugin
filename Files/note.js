@@ -59,7 +59,7 @@ async function Save() {
     save.innerText = "Saving...";
     save.className = "green";
     try {
-        let response = await fetch("/api[PATH_PREFIX]/save?id=" + id + "&text=" + encodeURIComponent(ta.value));
+        let response = await fetch("[PATH_PREFIX]/save?id=" + id, { method: "POST", body: ta.value });
         if (response.status === 200) {
             let text = await response.text();
             if (text.startsWith("[PATH_HOME]")) {
