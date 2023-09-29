@@ -50,6 +50,7 @@ public partial class NotesPlugin : Plugin
                     page.Navigation = new List<IButton>() { homeButton, backButton, new Button("More", $"{pathPrefix}/more" + idQuery, "right") };
                     if (note.ParentId != null) page.Navigation.Add(new ButtonJS("Delete", "Delete()", "right", id: "delete"));
                     else page.Navigation.Add(new Button("Search", $"{pathPrefix}/search", "right"));
+                    page.Navigation.Add(new Button("Notes", pluginHome));
 
                     //sidebar (shared)
                     if (id != "default")
@@ -111,7 +112,7 @@ public partial class NotesPlugin : Plugin
                     else parentLink = $"{pluginHome}?id=" + note.ParentId;
                     string lessLink = pluginHome + (id == "default" ? "" : $"?id={id}");
                     IButton homeButton = page.Navigation.Any() ? page.Navigation.First() : new Button(req.Domain, "/");
-                    page.Navigation = new List<IButton>() { homeButton, new Button("Back", parentLink, "right"), new Button("Less", lessLink, "right") };
+                    page.Navigation = new List<IButton>() { homeButton, new Button("Back", parentLink, "right"), new Button("Less", lessLink, "right"), new Button("Notes", pluginHome) };
 
                     e.Add(new HeadingElement(note.Name));
                     page.AddError();
@@ -132,7 +133,7 @@ public partial class NotesPlugin : Plugin
                 {
                     page.Title = "Search for notes";
                     IButton homeButton = page.Navigation.Any() ? page.Navigation.First() : new Button(req.Domain, "/");
-                    page.Navigation = new List<IButton> { homeButton, new Button("Back", pluginHome, "right") };
+                    page.Navigation = new List<IButton> { homeButton, new Button("Back", pluginHome, "right"), new Button("Notes", pluginHome) };
                     string? query = req.Query.TryGet("q");
                     page.Scripts.Add(new Script(pathPrefix + "/search.js"));
                     e.Add(new LargeContainerElement("Notes", new TextBox("Search notes...", query, "search", onEnter: "Search()", autofocus: true))
