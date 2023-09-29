@@ -9,7 +9,7 @@ public partial class NotesPlugin
 
     private static NoteGroup GetOrCreate(string userId, string userTable)
     {
-        if (Table.TryGetValue(userId, out var notes))
+        if (Table.TryGetValue(userTable + "_" + userId, out var notes))
             return notes;
         else
         {
@@ -18,7 +18,7 @@ public partial class NotesPlugin
             notes.Notes["default"] = note;
             Directory.CreateDirectory($"../Notes/{userTable}");
             File.WriteAllLines($"../Notes/{userTable}/{userId}-default.txt", Array.Empty<string>());
-            Table[userId] = notes;
+            Table[userTable + "_" + userId] = notes;
             return notes;
         }
     }
