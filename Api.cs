@@ -10,7 +10,7 @@ public partial class NotesPlugin : Plugin
             return;
         }
 
-        var notes = GetOrCreate(req.User.Id);
+        var notes = GetOrCreate(req.User.Id, req.UserTable.Name);
 
         string pluginHome = pathPrefix == "" ? "/" : pathPrefix;
 
@@ -23,7 +23,7 @@ public partial class NotesPlugin : Plugin
                     else if (note.IsFolder) req.Status = 400;
                     else
                     {
-                        var content = File.ReadAllText($"../Notes/{req.User.Id}-{id}.txt");
+                        var content = File.ReadAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt");
                         if (content == "")
                         {
                             req.Status = 201;
@@ -50,8 +50,8 @@ public partial class NotesPlugin : Plugin
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
-                        File.AppendAllLines($"../Notes/{req.User.Id}-{id}.txt", new List<string>() { nId });
-                        File.WriteAllText($"../Notes/{req.User.Id}-{nId}.txt", "");
+                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", new List<string>() { nId });
+                        File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}-{nId}.txt", "");
                         await req.Write(pluginHome + "?id=" + nId);
                     }
                 }
@@ -71,8 +71,8 @@ public partial class NotesPlugin : Plugin
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
-                        File.AppendAllLines($"../Notes/{req.User.Id}-{id}.txt", new List<string>() { nId });
-                        File.WriteAllLines($"../Notes/{req.User.Id}-{nId}.txt", Array.Empty<string>());
+                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", new List<string>() { nId });
+                        File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{nId}.txt", Array.Empty<string>());
                         await req.Write(pluginHome + "?id=" + nId);
                     }
                 }
@@ -85,7 +85,7 @@ public partial class NotesPlugin : Plugin
                     else
                     {
                         notes.Lock();
-                        notes.Delete(req.User.Id, id, true);
+                        notes.Delete(req.User.Id, req.UserTable.Name, id, true);
                         notes.UnlockSave();
                         if (note.ParentId != "default")
                             await req.Write(pluginHome + "?id=" + note.ParentId);

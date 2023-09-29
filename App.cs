@@ -15,7 +15,7 @@ public partial class NotesPlugin : Plugin
             return Task.CompletedTask;
         }
 
-        var notes = GetOrCreate(req.User.Id);
+        var notes = GetOrCreate(req.User.Id, req.UserTable.Name);
 
         string pluginHome = pathPrefix == "" ? "/" : pathPrefix;
 
@@ -31,7 +31,7 @@ public partial class NotesPlugin : Plugin
                         req.Status = 404;
                         break;
                     }
-                    string filePath = $"../Notes/{req.User.Id}-{id}.txt";
+                    string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt";
 
                     page.Title = note.Name;
                     page.Scripts.Add(new Script(pathPrefix + "/notes.js"));
@@ -55,7 +55,7 @@ public partial class NotesPlugin : Plugin
                     if (id != "default")
                     {
                         page.Sidebar.Add(new ButtonElementJS(null, "Go up a level", $"Navigate('{parentLink}')"));
-                        string parentFilePath = $"../Notes/{req.User.Id}-{note.ParentId}.txt";
+                        string parentFilePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}-{note.ParentId}.txt";
                         var siblings = File.ReadAllLines(parentFilePath).Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).OrderByDescending(x => x.Value.IsFolder).ThenBy(x => x.Value.Name);
                         foreach (var sibling in siblings)
                             if (sibling.Key == id)
@@ -100,7 +100,7 @@ public partial class NotesPlugin : Plugin
                         req.Status = 404;
                         break;
                     }
-                    string filePath = $"../Notes/{req.User.Id}-{id}.txt";
+                    string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt";
 
                     page.Title = note.Name;
                     page.Scripts.Add(new Script(pathPrefix + "/more.js"));

@@ -7,7 +7,7 @@ public partial class NotesPlugin
 {
     public readonly static Table<NoteGroup> Table = Table<NoteGroup>.Import("Notes");
 
-    private static NoteGroup GetOrCreate(string userId)
+    private static NoteGroup GetOrCreate(string userId, string userTable)
     {
         if (Table.TryGetValue(userId, out var notes))
             return notes;
@@ -16,7 +16,7 @@ public partial class NotesPlugin
             notes = new NoteGroup();
             var note = new NoteItem("Notes", null, true);
             notes.Notes["default"] = note;
-            File.WriteAllLines($"../Notes/{userId}-default.txt", Array.Empty<string>());
+            File.WriteAllLines($"../Notes/{userTable}/{userId}-default.txt", Array.Empty<string>());
             Table[userId] = notes;
             return notes;
         }
@@ -27,7 +27,7 @@ public partial class NotesPlugin
     {
         [DataMember] public Dictionary<string, NoteItem> Notes = new();
 
-        public void Delete(string userId, string noteId, bool deleteFromParent)
+        public void Delete(string userId, string userTable, string noteId, bool deleteFromParent)
         {
             var note = Notes[noteId];
             if (note.ParentId == null)
@@ -37,14 +37,14 @@ public partial class NotesPlugin
             }
             if (note.IsFolder)
             {
-                foreach (var child in File.ReadAllLines($"../Notes/{userId}-{noteId}.txt"))
+                foreach (var child in File.ReadAllLines($"../Notes/{userTable}/{userId}-{noteId}.txt"))
                 {
-                    Delete(userId, child, false);
+                    Delete(userId, userTable, child, false);
                 }
             }
             Notes.Remove(noteId);
-            if (deleteFromParent) File.WriteAllLines($"../Notes/{userId}-{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userId}-{note.ParentId}.txt").Where(x => x != noteId));
-            File.Delete($"../Notes/{userId}-{noteId}.txt");
+            if (deleteFromParent) File.WriteAllLines($"../Notes/{userTable}/{userId}-{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}-{note.ParentId}.txt").Where(x => x != noteId));
+            File.Delete($"../Notes/{userTable}/{userId}-{noteId}.txt");
         }
     }
 
