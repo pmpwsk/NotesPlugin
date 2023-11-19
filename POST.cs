@@ -6,7 +6,7 @@ public partial class NotesPlugin : Plugin
 {
     public override async Task Handle(PostRequest req, string path, string pathPrefix)
     {
-        if (req.User == null || (!req.LoggedIn))
+        if (!req.LoggedIn)
         {
             req.Status = 403;
             return;

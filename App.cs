@@ -9,7 +9,7 @@ public partial class NotesPlugin : Plugin
     {
         Presets.CreatePage(req, "Notes", out Page page, out List<IPageElement> e);
         Presets.Navigation(req, page);
-        if (req.User == null || (!req.LoggedIn))
+        if (!req.LoggedIn)
         {
             e.Add(new HeadingElement("Not logged in!", "You need to be logged in to use this application.", "red"));
             return Task.CompletedTask;
@@ -46,11 +46,13 @@ public partial class NotesPlugin : Plugin
                     else parentLink = $"{pluginHome}?id=" + note.ParentId;
                     string idQuery = id == "default" ? "" : $"?id={id}";
                     IButton backButton = note.IsFolder ? new Button("Back", parentLink, "right") : new ButtonJS("Back", $"Back('{parentLink}')", "right", id: "back");
-                    IButton homeButton = page.Navigation.Any() ? page.Navigation.First() : new Button(req.Domain, "/");
-                    page.Navigation = new List<IButton>() { homeButton, backButton, new Button("More", $"{pathPrefix}/more" + idQuery, "right") };
-                    if (note.ParentId != null) page.Navigation.Add(new ButtonJS("Delete", "Delete()", "right", id: "delete"));
-                    else page.Navigation.Add(new Button("Search", $"{pathPrefix}/search", "right"));
-                    page.Navigation.Add(new Button("Notes", pluginHome));
+                    IButton homeButton = page.Navigation.Count != 0 ? page.Navigation.First() : new Button(req.Domain, "/");
+                    page.Navigation =
+                    [
+                        homeButton, backButton, new Button("More", $"{pathPrefix}/more" + idQuery, "right"),
+                        note.ParentId != null ? new ButtonJS("Delete", "Delete()", "right", id: "delete") : new Button("Search", $"{pathPrefix}/search", "right"),
+                        new Button("Notes", pluginHome),
+                    ];
 
                     //sidebar (shared)
                     if (id != "default")
@@ -111,8 +113,8 @@ public partial class NotesPlugin : Plugin
                     else if (note.ParentId == "default") parentLink = pluginHome;
                     else parentLink = $"{pluginHome}?id=" + note.ParentId;
                     string lessLink = pluginHome + (id == "default" ? "" : $"?id={id}");
-                    IButton homeButton = page.Navigation.Any() ? page.Navigation.First() : new Button(req.Domain, "/");
-                    page.Navigation = new List<IButton>() { homeButton, new Button("Back", parentLink, "right"), new Button("Less", lessLink, "right"), new Button("Notes", pluginHome) };
+                    IButton homeButton = page.Navigation.Count != 0 ? page.Navigation.First() : new Button(req.Domain, "/");
+                    page.Navigation = [homeButton, new Button("Back", parentLink, "right"), new Button("Less", lessLink, "right"), new Button("Notes", pluginHome)];
 
                     e.Add(new HeadingElement(note.Name));
                     page.AddError();
@@ -120,7 +122,7 @@ public partial class NotesPlugin : Plugin
                     {
 
                         e.Add(new ContainerElement("Create new...", new TextBox("Enter a name...", null, "name", onEnter: "CreateFolder()"))
-                        { Buttons = new List<IButton>() { new ButtonJS("Folder", "CreateFolder()", "green"), new ButtonJS("Note", "CreateNote()", "green") } });
+                        { Buttons = [new ButtonJS("Folder", "CreateFolder()", "green"), new ButtonJS("Note", "CreateNote()", "green")] });
                     }
                     if (note.ParentId != null)
                     {
@@ -132,8 +134,8 @@ public partial class NotesPlugin : Plugin
             case "/search":
                 {
                     page.Title = "Search for notes";
-                    IButton homeButton = page.Navigation.Any() ? page.Navigation.First() : new Button(req.Domain, "/");
-                    page.Navigation = new List<IButton> { homeButton, new Button("Back", pluginHome, "right"), new Button("Notes", pluginHome) };
+                    IButton homeButton = page.Navigation.Count != 0 ? page.Navigation.First() : new Button(req.Domain, "/");
+                    page.Navigation = [homeButton, new Button("Back", pluginHome, "right"), new Button("Notes", pluginHome)];
                     string? query = req.Query.TryGet("q");
                     page.Scripts.Add(new Script(pathPrefix + "/search.js"));
                     e.Add(new LargeContainerElement("Notes", new TextBox("Search notes...", query, "search", onEnter: "Search()", autofocus: true))

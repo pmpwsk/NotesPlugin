@@ -17,7 +17,7 @@ public partial class NotesPlugin
             var note = new NoteItem("Notes", null, true);
             notes.Notes["default"] = note;
             Directory.CreateDirectory($"../Notes/{userTable}");
-            File.WriteAllLines($"../Notes/{userTable}/{userId}-default.txt", Array.Empty<string>());
+            File.WriteAllLines($"../Notes/{userTable}/{userId}-default.txt", []);
             Table[userTable + "_" + userId] = notes;
             return notes;
         }
@@ -26,7 +26,7 @@ public partial class NotesPlugin
     [DataContract]
     public class NoteGroup : ITableValue
     {
-        [DataMember] public Dictionary<string, NoteItem> Notes = new();
+        [DataMember] public Dictionary<string, NoteItem> Notes = [];
 
         public void Delete(string userId, string userTable, string noteId, bool deleteFromParent)
         {
@@ -50,19 +50,11 @@ public partial class NotesPlugin
     }
 
     [DataContract]
-    public class NoteItem
+    public class NoteItem(string name, string? parent, bool isFolder)
     {
-        [DataMember] public string Name;
-        [DataMember] public string? ParentId;
-        [DataMember] public bool IsFolder;
-        [DataMember] public DateTime Changed;
-
-        public NoteItem(string name, string? parent, bool isFolder)
-        {
-            Name = name;
-            ParentId = parent;
-            IsFolder = isFolder;
-            Changed = DateTime.UtcNow;
-        }
+        [DataMember] public string Name = name;
+        [DataMember] public string? ParentId = parent;
+        [DataMember] public bool IsFolder = isFolder;
+        [DataMember] public DateTime Changed = DateTime.UtcNow;
     }
 }

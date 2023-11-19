@@ -4,7 +4,7 @@ public partial class NotesPlugin : Plugin
 {
     public override async Task Handle(ApiRequest req, string path, string pathPrefix)
     {
-        if (req.User == null || (!req.LoggedIn))
+        if (!req.LoggedIn)
         {
             req.Status = 403;
             return;
@@ -50,7 +50,7 @@ public partial class NotesPlugin : Plugin
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
-                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", new List<string>() { nId });
+                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", [ nId ]);
                         File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}-{nId}.txt", "");
                         await req.Write(pluginHome + "?id=" + nId);
                     }
@@ -71,8 +71,8 @@ public partial class NotesPlugin : Plugin
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
-                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", new List<string>() { nId });
-                        File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{nId}.txt", Array.Empty<string>());
+                        File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", [ nId ]);
+                        File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}-{nId}.txt", []);
                         await req.Write(pluginHome + "?id=" + nId);
                     }
                 }
