@@ -1,5 +1,5 @@
 {
-  "name": "Notes ([DOMAIN])",
+  "name": "Notes ([DOMAIN_MAIN])",
   "short_name": "Notes",
   "start_url": "[PATH_HOME]",
   "display": "minimal-ui",
