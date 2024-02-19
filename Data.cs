@@ -5,7 +5,7 @@ namespace uwap.WebFramework.Plugins;
 
 public partial class NotesPlugin
 {
-    public readonly static Table<NoteGroup> Table = Table<NoteGroup>.Import("Notes");
+    public readonly Table<NoteGroup> Table = Table<NoteGroup>.Import("Notes");
 
     private NoteGroup GetOrCreate(string userId, string userTable)
     {
