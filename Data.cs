@@ -7,7 +7,7 @@ public partial class NotesPlugin
 {
     public readonly static Table<NoteGroup> Table = Table<NoteGroup>.Import("Notes");
 
-    private static NoteGroup GetOrCreate(string userId, string userTable)
+    private NoteGroup GetOrCreate(string userId, string userTable)
     {
         if (Table.TryGetValue(userTable + "_" + userId, out var notes))
             return notes;
