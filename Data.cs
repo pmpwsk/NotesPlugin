@@ -23,6 +23,46 @@ public partial class NotesPlugin
         }
     }
 
+    private class NoteGroupTable : Table<NoteGroup>
+    {
+        private NoteGroupTable(string name) : base(name) { }
+
+        protected static new NoteGroupTable Create(string name)
+        {
+            if (!name.All(Tables.KeyChars.Contains)) throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
+            if (Directory.Exists("../Database/" + name)) throw new Exception("A table with this name already exists, try importing it instead.");
+            Directory.CreateDirectory("../Database/" + name);
+            NoteGroupTable table = new(name);
+            Tables.Dictionary[name] = table;
+            return table;
+        }
+
+        public static new NoteGroupTable Import(string name, bool skipBroken = false)
+        {
+            if (Tables.Dictionary.TryGetValue(name, out ITable? table)) return (NoteGroupTable)table;
+            if (!name.All(Tables.KeyChars.Contains)) throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
+            if (!Directory.Exists("../Database/" + name)) return Create(name);
+
+            if (Directory.Exists("../Database/Buffer/" + name) && Directory.GetFiles("../Database/Buffer/" + name, "*.json", SearchOption.AllDirectories).Length > 0)
+                Console.WriteLine($"The database buffer of table '{name}' contains an entry because a database operation was interrupted. Please manually merge the files and delete the file from the buffer.");
+
+            NoteGroupTable result = new(name);
+            result.Reload(skipBroken);
+            Tables.Dictionary[name] = result;
+            return result;
+        }
+
+        protected override IEnumerable<string> EnumerateDirectoriesToClear()
+        {
+            yield return "../Notes";
+        }
+
+        protected override IEnumerable<string> EnumerateOtherDirectories(TableEntry<NoteGroup> entry)
+        {
+            yield return $"../Notes/{entry.Key.Replace('_', '/')}";
+        }
+    }
+
     [DataContract]
     public class NoteGroup : ITableValue
     {
