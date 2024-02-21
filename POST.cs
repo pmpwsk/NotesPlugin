@@ -26,7 +26,7 @@ public partial class NotesPlugin : Plugin
                     else
                     {
                         notes.Lock();
-                        File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}-{id}.txt", await req.GetBodyText());
+                        File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt", await req.GetBodyText());
                         note.Changed = DateTime.UtcNow;
                         notes.UnlockSave();
                         if (note.ParentId == "default")

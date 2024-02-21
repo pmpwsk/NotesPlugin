@@ -17,7 +17,7 @@ public partial class NotesPlugin
             var note = new NoteItem("Notes", null, true);
             notes.Notes["default"] = note;
             Directory.CreateDirectory($"../Notes/{userTable}");
-            File.WriteAllLines($"../Notes/{userTable}/{userId}-default.txt", []);
+            File.WriteAllLines($"../Notes/{userTable}/{userId}/default.txt", []);
             Table[userTable + "_" + userId] = notes;
             return notes;
         }
@@ -38,14 +38,14 @@ public partial class NotesPlugin
             }
             if (note.IsFolder)
             {
-                foreach (var child in File.ReadAllLines($"../Notes/{userTable}/{userId}-{noteId}.txt"))
+                foreach (var child in File.ReadAllLines($"../Notes/{userTable}/{userId}/{noteId}.txt"))
                 {
                     Delete(userId, userTable, child, false);
                 }
             }
             Notes.Remove(noteId);
-            if (deleteFromParent) File.WriteAllLines($"../Notes/{userTable}/{userId}-{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}-{note.ParentId}.txt").Where(x => x != noteId));
-            File.Delete($"../Notes/{userTable}/{userId}-{noteId}.txt");
+            if (deleteFromParent) File.WriteAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt").Where(x => x != noteId));
+            File.Delete($"../Notes/{userTable}/{userId}/{noteId}.txt");
         }
     }
 
