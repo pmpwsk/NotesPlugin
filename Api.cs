@@ -111,6 +111,28 @@ public partial class NotesPlugin : Plugin
                     }
                 }
                 break;
+            case "/move":
+                {
+                    if (req.Query.TryGetValue("id", out var id) && id != "default" && req.Query.TryGetValue("to", out var to))
+                    {
+                        if (notes.Notes.TryGetValue(id, out var note) && notes.Notes.TryGetValue(to, out var target))
+                        {
+                            if (note.ParentId != to)
+                            {
+                                notes.Lock();
+                                string file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
+                                File.WriteAllLines(file, File.ReadAllLines(file).Where(x => x != id));
+                                file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt";
+                                File.WriteAllLines(file, [.. File.ReadAllLines(file), id]);
+                                note.ParentId = to;
+                                notes.UnlockSave();
+                            }
+                        }
+                        else req.Status = 404;
+                    }
+                    else req.Status = 400;
+                }
+                break;
             default:
                 req.Status = 404;
                 break;
