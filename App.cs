@@ -131,6 +131,46 @@ public partial class NotesPlugin : Plugin
                     }
                 }
                 break;
+            case "/move":
+                {
+                    if (req.Query.TryGetValue("id", out var id) && id != "default" && req.Query.TryGetValue("to", out var to))
+                    {
+                        if (notes.Notes.TryGetValue(id, out var note) && notes.Notes.TryGetValue(to, out var target))
+                        {
+                            page.Scripts.Add(new Script($"{pathPrefix}/move.js"));
+
+                            page.Title = "Move " + note.Name;
+                            
+                            IButton homeButton = page.Navigation.Count != 0 ? page.Navigation.First() : new Button(req.Domain, "/");
+                            page.Navigation = [homeButton, ..target.ParentId == null ? (IEnumerable<IButton>)[] : [new Button("Back", $"{pathPrefix}/move?id={id}&to={target.ParentId}", "right")], new Button("Notes", pluginHome)];
+                            
+                            if (to != "default")
+                            {
+                                page.Sidebar.Add(new ButtonElement(null, "Go up a level", $"{pathPrefix}/move?id={id}&to={target.ParentId}"));
+                                string parentFilePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{target.ParentId}.txt";
+                                var siblings = File.ReadAllLines(parentFilePath).Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).Where(x => x.Value.IsFolder).OrderBy(x => x.Value.Name);
+                                foreach (var sibling in siblings)
+                                    if (sibling.Key == to)
+                                        page.Sidebar.Add(new ContainerElement(null, sibling.Value.Name, "green"));
+                                    else page.Sidebar.Add(new ButtonElement(null, sibling.Value.Name, $"{pathPrefix}/move?id={id}&to={sibling.Key}"));
+                            }
+                            
+                            e.Add(new LargeContainerElement(target.Name, $"You are moving: {note.Name}") { Button = new Button("Cancel", $"{pathPrefix}/more?id={id}", "red")});
+                            if (note.ParentId != to)
+                                e.Add(new ButtonElementJS("Move here", null, "Move()", "green"));
+                            page.AddError();
+
+                            var items = File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).Where(x => x.Value.IsFolder).OrderBy(x => x.Value.Name);
+                            foreach (var item in items)
+                                e.Add(new ButtonElement(item.Value.Name, null, $"{pathPrefix}/move?id={id}&to={item.Key}"));
+                            if (!items.Any())
+                                e.Add(new ContainerElement("No items!", "", "red"));
+                        }
+                        else req.Status = 404;
+                    }
+                    else req.Status = 400;
+                }
+                break;
             case "/search":
                 {
                     page.Title = "Search for notes";
