@@ -127,6 +127,7 @@ public partial class NotesPlugin : Plugin
                     if (note.ParentId != null)
                     {
                         e.Add(new ContainerElement("Rename:", new TextBox("Enter a new name...", note.Name, "rename", onEnter: "Rename()")) { Button = new ButtonJS("Save", "Rename()", "green") });
+                        e.Add(new ButtonElement("Move", null, $"{pathPrefix}/move?id={id}&to={note.ParentId}"));
                         e.Add(new ButtonElementJS("Delete", null, "Delete()", "red", id: "delete"));
                     }
                 }
