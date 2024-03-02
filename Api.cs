@@ -18,35 +18,37 @@ public partial class NotesPlugin : Plugin
         {
             case "/get":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (note.IsFolder) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (note.IsFolder)
+                        req.Status = 400;
                     else
                     {
                         var content = File.ReadAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt");
                         if (content == "")
-                        {
                             req.Status = 201;
-                        }
-                        else
-                        {
-                            await req.Write(content);
-                        }
+                        else await req.Write(content);
                     }
                 }
                 break;
             case "/create-note":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!req.Query.TryGetValue("name", out string? name)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (!note.IsFolder) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!req.Query.TryGetValue("name", out string? name))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (!note.IsFolder)
+                        req.Status = 400;
                     else
                     {
                         var n = new NoteItem(name, id, false);
                         string nId;
                         do nId = Parsers.RandomString(7);
-                        while (notes.Notes.ContainsKey(nId));
+                            while (notes.Notes.ContainsKey(nId));
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
@@ -58,16 +60,20 @@ public partial class NotesPlugin : Plugin
                 break;
             case "/create-folder":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!req.Query.TryGetValue("name", out string? name)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (!note.IsFolder) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!req.Query.TryGetValue("name", out string? name))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (!note.IsFolder)
+                        req.Status = 400;
                     else
                     {
                         var n = new NoteItem(name, id, true);
                         string nId;
                         do nId = Parsers.RandomString(7);
-                        while (notes.Notes.ContainsKey(nId));
+                            while (notes.Notes.ContainsKey(nId));
                         notes.Lock();
                         notes.Notes[nId] = n;
                         notes.UnlockSave();
@@ -79,9 +85,12 @@ public partial class NotesPlugin : Plugin
                 break;
             case "/delete":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (note.ParentId == null) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (note.ParentId == null)
+                        req.Status = 400;
                     else
                     {
                         notes.Lock();
@@ -95,10 +104,14 @@ public partial class NotesPlugin : Plugin
                 break;
             case "/rename":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!req.Query.TryGetValue("name", out string? name)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (note.ParentId == null) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!req.Query.TryGetValue("name", out string? name))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (note.ParentId == null)
+                        req.Status = 400;
                     else
                     {
                         if (note.Name != name)

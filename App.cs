@@ -33,16 +33,14 @@ public partial class NotesPlugin : Plugin
                     }
                     string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
 
-                    page.Title = note.Name;
                     page.Scripts.Add(new Script(pathPrefix + "/notes.js"));
-
-                    if (note.ParentId == null)
-                        page.Title = "Notes";
-                    else page.Title = note.Name + " - Notes";
+                    page.Title = note.ParentId == null ? "Notes" : $"{note.Name} - Notes";
 
                     string parentLink;
-                    if (note.ParentId == null) parentLink = "/";
-                    else if (note.ParentId == "default") parentLink = pluginHome;
+                    if (note.ParentId == null)
+                        parentLink = "/";
+                    else if (note.ParentId == "default")
+                        parentLink = pluginHome;
                     else parentLink = $"{pluginHome}?id=" + note.ParentId;
                     string idQuery = id == "default" ? "" : $"?id={id}";
                     IButton backButton = note.IsFolder ? new Button("Back", parentLink, "right") : new ButtonJS("Back", $"Back('{parentLink}')", "right", id: "back");
@@ -80,12 +78,11 @@ public partial class NotesPlugin : Plugin
                     else //note
                     {
                         page.Scripts.Add(new Script(pathPrefix + "/note.js"));
-                        page.Styles.Add(new CustomStyle(new List<string>
-                        {
+                        page.Styles.Add(new CustomStyle(
                             "div.editor { display: flex; flex-flow: column; }",
                             "div.editor textarea { flex: 1 1 auto; }",
                             "div.editor h1, div.editor h2, div.editor div.buttons { flex: 0 1 auto; }"
-                        }));
+                        ));
                         page.AddError();
                         page.HideFooter = true;
                         e.Add(new LargeContainerElementIsoTop(note.Name, new TextArea("Loading...", null, "text", null, onInput: "TextChanged(); Resize();"), classes: "editor", id: "editor")
@@ -109,8 +106,10 @@ public partial class NotesPlugin : Plugin
                     page.Scripts.Add(new Script(pathPrefix + "/more.js"));
 
                     string parentLink;
-                    if (note.ParentId == null) parentLink = "/";
-                    else if (note.ParentId == "default") parentLink = pluginHome;
+                    if (note.ParentId == null)
+                        parentLink = "/";
+                    else if (note.ParentId == "default")
+                        parentLink = pluginHome;
                     else parentLink = $"{pluginHome}?id=" + note.ParentId;
                     string lessLink = pluginHome + (id == "default" ? "" : $"?id={id}");
                     IButton homeButton = page.Navigation.Count != 0 ? page.Navigation.First() : new Button(req.Domain, "/");
@@ -119,11 +118,8 @@ public partial class NotesPlugin : Plugin
                     e.Add(new HeadingElement(note.Name));
                     page.AddError();
                     if (note.IsFolder)
-                    {
-
                         e.Add(new ContainerElement("Create new...", new TextBox("Enter a name...", null, "name", onEnter: "CreateFolder()"))
                         { Buttons = [new ButtonJS("Folder", "CreateFolder()", "green"), new ButtonJS("Note", "CreateNote()", "green")] });
-                    }
                     if (note.ParentId != null)
                     {
                         e.Add(new ContainerElement("Rename:", new TextBox("Enter a new name...", note.Name, "rename", onEnter: "Rename()")) { Button = new ButtonJS("Save", "Rename()", "green") });

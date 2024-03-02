@@ -29,8 +29,11 @@ public partial class NotesPlugin
 
         protected static new NoteGroupTable Create(string name)
         {
-            if (!name.All(Tables.KeyChars.Contains)) throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
-            if (Directory.Exists("../Database/" + name)) throw new Exception("A table with this name already exists, try importing it instead.");
+            if (!name.All(Tables.KeyChars.Contains))
+                throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
+            if (Directory.Exists("../Database/" + name))
+                throw new Exception("A table with this name already exists, try importing it instead.");
+
             Directory.CreateDirectory("../Database/" + name);
             NoteGroupTable table = new(name);
             Tables.Dictionary[name] = table;
@@ -39,9 +42,12 @@ public partial class NotesPlugin
 
         public static new NoteGroupTable Import(string name, bool skipBroken = false)
         {
-            if (Tables.Dictionary.TryGetValue(name, out ITable? table)) return (NoteGroupTable)table;
-            if (!name.All(Tables.KeyChars.Contains)) throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
-            if (!Directory.Exists("../Database/" + name)) return Create(name);
+            if (Tables.Dictionary.TryGetValue(name, out ITable? table))
+                return (NoteGroupTable)table;
+            if (!name.All(Tables.KeyChars.Contains))
+                throw new Exception($"This name contains characters that are not part of Tables.KeyChars ({Tables.KeyChars}).");
+            if (!Directory.Exists("../Database/" + name))
+                return Create(name);
 
             if (Directory.Exists("../Database/Buffer/" + name) && Directory.GetFiles("../Database/Buffer/" + name, "*.json", SearchOption.AllDirectories).Length > 0)
                 Console.WriteLine($"The database buffer of table '{name}' contains an entry because a database operation was interrupted. Please manually merge the files and delete the file from the buffer.");
@@ -77,14 +83,11 @@ public partial class NotesPlugin
                 return;
             }
             if (note.IsFolder)
-            {
                 foreach (var child in File.ReadAllLines($"../Notes/{userTable}/{userId}/{noteId}.txt"))
-                {
                     Delete(userId, userTable, child, false);
-                }
-            }
             Notes.Remove(noteId);
-            if (deleteFromParent) File.WriteAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt").Where(x => x != noteId));
+            if (deleteFromParent)
+                File.WriteAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt").Where(x => x != noteId));
             File.Delete($"../Notes/{userTable}/{userId}/{noteId}.txt");
         }
     }

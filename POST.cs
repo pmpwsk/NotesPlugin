@@ -20,9 +20,12 @@ public partial class NotesPlugin : Plugin
         {
             case "/save":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id)) req.Status = 400;
-                    else if (!notes.Notes.TryGetValue(id, out var note)) req.Status = 404;
-                    else if (note.IsFolder) req.Status = 400;
+                    if (!req.Query.TryGetValue("id", out string? id))
+                        req.Status = 400;
+                    else if (!notes.Notes.TryGetValue(id, out var note))
+                        req.Status = 404;
+                    else if (note.IsFolder)
+                        req.Status = 400;
                     else
                     {
                         notes.Lock();
