@@ -4,26 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageId>uwap.NotesPlugin</PackageId>
-    <Title>NotesPlugin</Title>
-    <Version>0.0.0.1</Version>
-    <Authors>pmpwsk</Authors>
-    <Company>uwap.org</Company>
-    <Description>Plugin for WebFramework that adds a simple notes app for users.</Description>
-    <Copyright>uwap.org</Copyright>
-    <PackageProjectUrl>https://uwap.org/projects/notes-plugin</PackageProjectUrl>
-    <PackageIcon>no-128.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/pmpwsk/NotesPlugin</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>plugin;notes;notes-app;wf-plugin</PackageTags>
-    <PackageReleaseNotes>https://uwap.org/changes/notes-plugin</PackageReleaseNotes>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Web\WebFramework\WebFramework.csproj" />
+    <ProjectReference Include="..\WebFramework\WebFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
