@@ -20,7 +20,9 @@ public partial class NotesPlugin : Plugin
         {
             case "/save":
                 {
-                    if (!req.Query.TryGetValue("id", out string? id))
+                    if (req.IsForm)
+                        req.Status = 400;
+                    else if (!req.Query.TryGetValue("id", out string? id))
                         req.Status = 400;
                     else if (!notes.Notes.TryGetValue(id, out var note))
                         req.Status = 404;
