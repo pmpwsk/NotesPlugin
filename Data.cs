@@ -16,7 +16,7 @@ public partial class NotesPlugin
             notes = new NoteGroup();
             var note = new NoteItem("Notes", null, true);
             notes.Notes["default"] = note;
-            Directory.CreateDirectory($"../Notes/{userTable}");
+            Directory.CreateDirectory($"../Notes/{userTable}/{userId}");
             File.WriteAllLines($"../Notes/{userTable}/{userId}/default.txt", []);
             Table[userTable + "_" + userId] = notes;
             return notes;
