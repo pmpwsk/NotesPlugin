@@ -12,35 +12,33 @@ function GetId() {
 }
 
 async function Rename() {
+    HideError();
     var rename = document.getElementById("rename");
     if (rename.value === "")
         ShowError("Enter a new name!");
-    else try {
-        var response = await fetch(`more/rename?id=${id}&name=${encodeURIComponent(rename.value)}`, {method: "POST"});
-        if (response.status === 200) {
-            var text = await response.text();
-            if (text === "list" || text === "edit")
-                window.location.assign(`${text}?id=${id}`);
-            else ShowError("Connection failed.");
-        } else ShowError("Connection failed.");
-    } catch {
-        ShowError("Connection failed.");
+    else {
+        var response = await SendRequest(`more/rename?id=${id}&name=${encodeURIComponent(rename.value)}`, "POST");
+        switch (response) {
+            case "list":
+            case "edit":
+                window.location.assign(`${response}?id=${id}`);
+                break;
+            default:
+                ShowError("Connection failed.");
+                break;
+        }
     }
 }
 
 async function Delete() {
+    HideError();
     var deleteElement = document.getElementById("delete");
-    if (deleteElement.firstElementChild.innerText === "Really?")
-        try {
-            var response = await fetch(`more/delete?id=${id}`, {method: "POST"});
-            if (response.status === 200) {
-                var text = await response.text();
-                if (text === "." || text.startsWith("list?id="))
-                    window.location.assign(text);
-                else ShowError("Connection failed.");
-            } else ShowError("Connection failed.");
-        } catch {
-            ShowError("Connection failed.");
-        }
-    else deleteElement.firstElementChild.innerText = "Really?";
+    if (deleteElement.firstElementChild.innerText !== "Really?")
+        deleteElement.firstElementChild.innerText = "Really?";
+    else {
+        var response = await SendRequest(`more/delete?id=${id}`, "POST");
+        if (typeof response === "string" && (response === "." || response.startsWith("list?id=")))
+            window.location.assign(response);
+        else ShowError("Connection failed.");
+    }
 }

@@ -45,6 +45,7 @@ public partial class NotesPlugin : Plugin
                         else page.Sidebar.Add(new ButtonElement(null, sibling.Value.Name, $"{(sibling.Value.IsFolder ? "list" : "edit")}?id={sibling.Key}"));
                 }
 
+                page.Scripts.Add(Presets.SendRequestScript);
                 page.Scripts.Add(new Script("list.js"));
                 e.Add(new LargeContainerElement(note.Name));
                 e.Add(new ContainerElement("New", new TextBox("Enter a name...", null, "name", onEnter: "Create(false)", autofocus: true))

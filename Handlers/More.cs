@@ -15,6 +15,7 @@ public partial class NotesPlugin : Plugin
                 if (!notes.Notes.TryGetValue(id, out NoteItem? note))
                     throw new NotFoundSignal();
                 page.Title = note.Name;
+                page.Scripts.Add(Presets.SendRequestScript);
                 page.Scripts.Add(new Script("more.js"));
                 page.Navigation.Add(new Button("Back", note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId), "right"));
                 page.Navigation.Add(new Button("Less", $"{(note.IsFolder ? "list" : "edit")}?id={id}", "right"));

@@ -14,6 +14,7 @@ public partial class NotesPlugin : Plugin
                     throw new BadRequestSignal();
                 if (!(notes.Notes.TryGetValue(id, out var note) && notes.Notes.TryGetValue(to, out var target)))
                     throw new NotFoundSignal();
+                page.Scripts.Add(Presets.SendRequestScript);
                 page.Scripts.Add(new Script("move.js"));
                 page.Title = "Move " + note.Name;
                 if (target.ParentId != null)
