@@ -1,4 +1,6 @@
 let id = GetId();
+let changedAlready = false;
+let savedValue = null;
 let ch = 0;
 let ta = document.getElementById("text");
 let editor = document.getElementById("editor");
@@ -24,17 +26,6 @@ window.addEventListener("beforeunload", e => {
     }
 });
 
-function GetId() {
-    try {
-        var query = new URLSearchParams(window.location.search);
-        if (query.has("id"))
-            return query.get("id");
-        else return "default";
-    } catch {
-        return "null";
-    }
-}
-
 function Resize() {
     var fullComp = window.getComputedStyle(full);
     var editorComp = window.getComputedStyle(editor);
@@ -55,16 +46,20 @@ function Refocus() {
 
 async function Load() {
     try {
-        var response = await fetch(`edit/load?id=${id}`);
+        var response = await fetch(`edit/load?id=${id}`, {cache:"no-store"});
         switch (response.status) {
             case 200:
-                ta.value = await response.text();
-                ta.placeholder = "Enter something...";
-                break;
             case 201:
-                ta.value = "";
+                savedValue = response.status === 201 ? "" : await response.text();
+                if (save.innerText === "Save") {
+                    if (ta.value === savedValue) {
+                        save.innerText = "Saved!";
+                        save.className = "";
+                    }
+                } else ta.value = savedValue;
                 ta.placeholder = "Enter something...";
-                ta.focus();
+                if (ta.value === "")
+                    ta.focus();
                 break;
             default:
                 ta.value = "";
@@ -81,8 +76,12 @@ async function Load() {
 }
 
 function TextChanged() {
-    save.innerText = "Save";
-    save.className = "green";
+    if (changedAlready || ta.value !== savedValue) {
+        save.innerText = "Save";
+        save.className = "green";
+        changedAlready = true;
+        savedValue = null;
+    }
 }
 
 async function Save() {
@@ -107,4 +106,15 @@ async function Back(parentLink) {
     if (save.innerText === "Save" && back.innerText == "Back")
         back.innerText = "Discard?";
     else window.location.assign(parentLink);
+}
+
+function GetId() {
+    try {
+        var query = new URLSearchParams(window.location.search);
+        if (query.has("id"))
+            return query.get("id");
+        else return "default";
+    } catch {
+        return "null";
+    }
 }
