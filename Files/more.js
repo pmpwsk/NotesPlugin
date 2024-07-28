@@ -2,89 +2,45 @@ let id = GetId();
 
 function GetId() {
     try {
-        let query = new URLSearchParams(window.location.search);
-        if (query.has("id")) {
+        var query = new URLSearchParams(window.location.search);
+        if (query.has("id"))
             return query.get("id");
-        } else {
-            return "default";
-        }
+        else return "default";
     } catch {
-        return "default";
-    }
-}
-
-async function CreateNote() {
-    let name = document.querySelector("#name");
-    if (name.value === "") {
-        ShowError("Enter a name.");
-    } else {
-        let response = await fetch("/api[PATH_PREFIX]/create-note?id=" + id + "&name=" + encodeURIComponent(name.value));
-        if (response.status === 200) {
-            let text = await response.text();
-            if (text.startsWith("[PATH_HOME]?id=")) {
-                window.location.assign(text);
-            } else {
-                ShowError("Connection failed.");
-            }
-        } else {
-            ShowError("Connection failed.");
-        }
-    }
-}
-
-async function CreateFolder() {
-    let name = document.querySelector("#name");
-    if (name.value === "") {
-        ShowError("Enter a name.");
-    } else {
-        let response = await fetch("/api[PATH_PREFIX]/create-folder?id=" + id + "&name=" + encodeURIComponent(name.value));
-        if (response.status === 200) {
-            let text = await response.text();
-            if (text.startsWith("[PATH_HOME]?id=")) {
-                window.location.assign(text);
-            } else {
-                ShowError("Connection failed.");
-            }
-        } else {
-            ShowError("Connection failed.");
-        }
+        return "null";
     }
 }
 
 async function Rename() {
-    let rename = document.querySelector("#rename");
-    if (rename.value === "") {
-        ShowError("Enter a new name.");
-    } else {
-        let response = await fetch("/api[PATH_PREFIX]/rename?id=" + id + "&name=" + encodeURIComponent(rename.value));
+    var rename = document.getElementById("rename");
+    if (rename.value === "")
+        ShowError("Enter a new name!");
+    else try {
+        var response = await fetch(`more/rename?id=${id}&name=${encodeURIComponent(rename.value)}`, {method: "POST"});
         if (response.status === 200) {
-            let text = await response.text();
-            if (text.startsWith("[PATH_HOME]")) {
-                window.location.assign(text);
-            } else {
-                ShowError("Connection failed.");
-            }
-        } else {
-            ShowError("Connection failed.");
-        }
+            var text = await response.text();
+            if (text === "list" || text === "edit")
+                window.location.assign(`${text}?id=${id}`);
+            else ShowError("Connection failed.");
+        } else ShowError("Connection failed.");
+    } catch {
+        ShowError("Connection failed.");
     }
 }
 
 async function Delete() {
-    let deleteElement = document.querySelector("#delete");
-    if (deleteElement.firstElementChild.textContent === "Really?") {
-        let response = await fetch("/api[PATH_PREFIX]/delete?id=" + id);
-        if (response.status === 200) {
-            let text = await response.text();
-            if (text.startsWith("[PATH_HOME]")) {
-                window.location.assign(text);
-            } else {
-                ShowError("Connection failed.");
-            }
-        } else {
+    var deleteElement = document.getElementById("delete");
+    if (deleteElement.firstElementChild.innerText === "Really?")
+        try {
+            var response = await fetch(`more/delete?id=${id}`, {method: "POST"});
+            if (response.status === 200) {
+                var text = await response.text();
+                if (text === "." || text.startsWith("list?id="))
+                    window.location.assign(text);
+                else ShowError("Connection failed.");
+            } else ShowError("Connection failed.");
+        } catch {
             ShowError("Connection failed.");
         }
-    } else {
-        deleteElement.firstElementChild.textContent = "Really?";
-    }
+    else deleteElement.firstElementChild.innerText = "Really?";
 }
