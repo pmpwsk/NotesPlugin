@@ -20,6 +20,8 @@ async function Create(folder) {
         var response = await SendRequest(`list/create?id=${id}&name=${encodeURIComponent(name.value)}&folder=${folder}`, "POST");
         if (typeof response === "string" && response.startsWith("id="))
             window.location.assign(`${(folder ? "list" : "edit")}?${response}`);
+        else if (response === 302)
+            ShowError("Another note or folder already uses this name!");
         else ShowError("Connection failed.");
     }
 }

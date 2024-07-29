@@ -51,9 +51,14 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (note.ParentId == null)
                     throw new BadRequestSignal();
-                notes.Lock();
-                note.Name = name;
-                notes.UnlockSave();
+                if (note.Name != name)
+                {
+                    if (File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == name))
+                        throw new HttpStatusSignal(302);
+                    notes.Lock();
+                    note.Name = name;
+                    notes.UnlockSave();
+                }
                 await req.Write(note.IsFolder ? "list" : "edit");
             } break;
 

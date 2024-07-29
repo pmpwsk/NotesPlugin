@@ -23,6 +23,9 @@ async function Rename() {
             case "edit":
                 window.location.assign(`${response}?id=${id}`);
                 break;
+            case 302:
+                ShowError("Another note or folder already uses this name!");
+                break;
             default:
                 ShowError("Connection failed.");
                 break;

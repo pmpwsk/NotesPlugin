@@ -55,29 +55,26 @@ public partial class NotesPlugin : Plugin
 
             case "/list/create":
             { POST(req, out var notes);
-                if (!(req.Query.TryGetValue("id", out string? id) && req.Query.TryGetValue("folder", out bool folder)))
-                    req.Status = 400;
-                else if (!req.Query.TryGetValue("name", out string? name))
-                    req.Status = 400;
-                else if (!notes.Notes.TryGetValue(id, out var note))
-                    req.Status = 404;
-                else if (!note.IsFolder)
-                    req.Status = 400;
-                else
-                {
-                    var n = new NoteItem(name, id, folder);
-                    string nId;
-                    do nId = Parsers.RandomString(7);
-                        while (notes.Notes.ContainsKey(nId));
-                    notes.Lock();
-                    notes.Notes[nId] = n;
-                    File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt", [ nId ]);
-                    if (folder)
-                        File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", []);
-                    else File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", "");
-                    notes.UnlockSave();
-                    await req.Write($"id={nId}");
-                }
+                if (!(req.Query.TryGetValue("id", out string? id) && req.Query.TryGetValue("folder", out bool folder) && req.Query.TryGetValue("name", out string? name)))
+                    throw new BadRequestSignal();
+                if (!notes.Notes.TryGetValue(id, out var note))
+                    throw new NotFoundSignal();
+                if (!note.IsFolder)
+                    throw new BadRequestSignal();
+                if (File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == name))
+                    throw new HttpStatusSignal(302);
+                var n = new NoteItem(name, id, folder);
+                string nId;
+                do nId = Parsers.RandomString(7);
+                    while (notes.Notes.ContainsKey(nId));
+                notes.Lock();
+                notes.Notes[nId] = n;
+                File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt", [ nId ]);
+                if (folder)
+                    File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", []);
+                else File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", "");
+                notes.UnlockSave();
+                await req.Write($"id={nId}");
             } break;
 
 

@@ -46,16 +46,17 @@ public partial class NotesPlugin : Plugin
                     throw new BadRequestSignal();
                 if (!(notes.Notes.TryGetValue(id, out var note) && notes.Notes.TryGetValue(to, out var target)))
                     throw new NotFoundSignal();
-                if (note.ParentId != to)
-                {
-                    notes.Lock();
-                    string file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
-                    File.WriteAllLines(file, File.ReadAllLines(file).Where(x => x != id));
-                    file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt";
-                    File.WriteAllLines(file, [.. File.ReadAllLines(file), id]);
-                    note.ParentId = to;
-                    notes.UnlockSave();
-                }
+                if (note.ParentId == to)
+                    break;
+                if (File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == note.Name))
+                    throw new HttpStatusSignal(302);
+                notes.Lock();
+                string file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
+                File.WriteAllLines(file, File.ReadAllLines(file).Where(x => x != id));
+                file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt";
+                File.WriteAllLines(file, [.. File.ReadAllLines(file), id]);
+                note.ParentId = to;
+                notes.UnlockSave();
             } break;
 
 
