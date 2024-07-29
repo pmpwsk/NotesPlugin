@@ -17,7 +17,8 @@ public partial class NotesPlugin : Plugin
                 page.Title = note.Name;
                 page.Scripts.Add(Presets.SendRequestScript);
                 page.Scripts.Add(new Script("more.js"));
-                page.Navigation.Add(new Button("Back", note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId), "right"));
+                string parentLink = note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId);
+                page.Navigation.Add(new Button("Back", parentLink, "right"));
                 page.Navigation.Add(new Button("Less", $"{(note.IsFolder ? "list" : "edit")}?id={id}", "right"));
                 e.Add(new HeadingElement(note.Name));
                 page.AddError();

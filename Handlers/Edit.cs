@@ -18,16 +18,9 @@ public partial class NotesPlugin : Plugin
                     throw new BadRequestSignal();
                 string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
                 page.Title = note.ParentId == null ? "Notes" : $"{note.Name} - Notes";
-
-                string parentLink;
-                if (note.ParentId == null)
-                    parentLink = "/";
-                else if (note.ParentId == "default")
-                    parentLink = ".";
-                else parentLink = $"list?id={note.ParentId}";
+                string parentLink = note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId);
                 page.Navigation.Add(note.IsFolder ? new Button("Back", parentLink, "right") : new ButtonJS("Back", $"Back('{parentLink}')", "right", id: "back"));
                 page.Navigation.Add(new Button("More", $"more{(id == "default" ? "" : $"?id={id}")}", "right"));
-
                 if (id != "default")
                 {
                     page.Sidebar.Add(new ButtonElement(null, "Go up a level", parentLink));
@@ -38,7 +31,6 @@ public partial class NotesPlugin : Plugin
                             page.Sidebar.Add(new ContainerElement(null, sibling.Value.Name, "green"));
                         else page.Sidebar.Add(new ButtonElement(null, sibling.Value.Name, $"{(sibling.Value.IsFolder ? "list" : "edit")}?id={sibling.Key}"));
                 }
-
                 page.Scripts.Add(new Script("edit.js"));
                 page.Styles.Add(new CustomStyle(
                     "div.editor { display: flex; flex-flow: column; }",
