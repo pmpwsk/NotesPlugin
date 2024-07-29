@@ -20,10 +20,10 @@ public partial class NotesPlugin : Plugin
                 });
                 if (query != null)
                 {
-                    Search<KeyValuePair<string, NoteItem>> search = new(notes.Notes.Where(x => !x.Value.IsFolder), query);
+                    Search<KeyValuePair<string, NoteItem>> search = new(notes.Notes.Where(x => x.Key != "default"), query);
                     search.Find(x => x.Value.Name);
                     search.Find(x => x.Value.Changed.ToLongDateString());
-                    var results = search.Sort(x => x.Value.Name).ToList();
+                    var results = search.Sort(x => !x.Value.IsFolder, x => x.Value.Name).ToList();
                     foreach (var item in results)
                         e.Add(new ButtonElement(item.Value.Name, item.Value.IsFolder ? null : $"Note - {item.Value.Changed.Date.ToLongDateString()}", $"{(item.Value.IsFolder ? "list" : "edit")}?id={item.Key}"));
                     if (results.Count == 0)
