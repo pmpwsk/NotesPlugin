@@ -77,6 +77,20 @@ public partial class NotesPlugin : Plugin
                 await req.Write($"id={nId}");
             } break;
 
+            case "/changed-event":
+            { GET(req, out var notes);
+                if (!req.Query.TryGetValue("id", out string? id))
+                    throw new BadRequestSignal();
+                if (!notes.Notes.ContainsKey(id))
+                    throw new NotFoundSignal();
+                lock(ChangeListeners)
+                    if (ChangeListeners.TryGetValue(id, out var set))
+                        set.Add(req);
+                    else ChangeListeners[id] = [req];
+                req.KeepEventAliveCancelled += RemoveChangeListener;
+                await req.KeepEventAlive();
+            } break;
+
 
 
 

@@ -25,6 +25,12 @@ window.addEventListener("beforeunload", e => {
         return confirmationMessage;
     }
 });
+let incomingEvent = new EventSource(`changed-event${window.location.search}`);
+onbeforeunload = (event) => { incomingEvent.close(); };
+incomingEvent.onmessage = async (event) => {
+    if (event.data === "changed" && save.innerText === "Saved!")
+        await Load();
+};
 
 function Resize() {
     var fullComp = window.getComputedStyle(full);

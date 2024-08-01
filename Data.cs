@@ -7,6 +7,8 @@ public partial class NotesPlugin
 {
     private readonly NoteGroupTable Table = NoteGroupTable.Import("NotesPlugin.Profiles");
 
+    private readonly Dictionary<string, HashSet<Request>> ChangeListeners = [];
+
     private NoteGroup GetOrCreate(string userId, string userTable)
     {
         if (Table.TryGetValue(userTable + "_" + userId, out var notes))
@@ -21,6 +23,14 @@ public partial class NotesPlugin
             Table[userTable + "_" + userId] = notes;
             return notes;
         }
+    }
+
+    private Task RemoveChangeListener(Request req)
+    {
+        lock(ChangeListeners)
+            if (req.Query.TryGetValue("id", out var id) && ChangeListeners.TryGetValue(id, out var set) && set.Remove(req) && set.Count == 0)
+                ChangeListeners.Remove(id);
+        return Task.CompletedTask;
     }
 
     private class NoteGroupTable : Table<NoteGroup>
