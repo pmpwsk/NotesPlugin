@@ -75,6 +75,7 @@ public partial class NotesPlugin : Plugin
                 else File.WriteAllText($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", "");
                 notes.UnlockSave();
                 await req.Write($"id={nId}");
+                await NotifyChangeListeners(id);
             } break;
 
             case "/changed-event":

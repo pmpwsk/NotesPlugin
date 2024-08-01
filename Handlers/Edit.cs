@@ -71,9 +71,9 @@ public partial class NotesPlugin : Plugin
                 File.WriteAllText($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt", await req.GetBodyText());
                 note.Changed = DateTime.UtcNow;
                 notes.UnlockSave();
-                if (ChangeListeners.TryGetValue(id, out var set))
-                    foreach (var r in set)
-                        await r.EventMessage("changed");
+                await NotifyChangeListeners(id);
+                if (note.ParentId != null)
+                    await NotifyChangeListeners(note.ParentId);
             } break;
 
 

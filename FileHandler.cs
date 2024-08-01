@@ -24,7 +24,7 @@ public partial class NotesPlugin : Plugin
 			"/icon.ico" => "1694963322000",
 			"/icon.png" => "1687982107000",
 			"/icon.svg" => "1695860848000",
-			"/list.js" => "1722212415161",
+			"/list.js" => "1722530341611",
 			"/manifest.json" => "1722176354326",
 			"/more.js" => "1722212421717",
 			"/move.js" => "1722212655810",

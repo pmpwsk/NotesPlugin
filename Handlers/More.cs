@@ -41,6 +41,7 @@ public partial class NotesPlugin : Plugin
                 if (note.ParentId != "default")
                     await req.Write($"list?id={note.ParentId}");
                 else await req.Write(".");
+                await NotifyChangeListeners(note.ParentId);
             } break;
 
             case "/more/rename":
@@ -60,6 +61,7 @@ public partial class NotesPlugin : Plugin
                     notes.UnlockSave();
                 }
                 await req.Write(note.IsFolder ? "list" : "edit");
+                await NotifyChangeListeners(note.ParentId);
             } break;
 
 

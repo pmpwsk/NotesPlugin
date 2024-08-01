@@ -33,6 +33,13 @@ public partial class NotesPlugin
         return Task.CompletedTask;
     }
 
+    private async Task NotifyChangeListeners(string id)
+    {
+        if (ChangeListeners.TryGetValue(id, out var set))
+            foreach (var r in set)
+                await r.EventMessage("changed");
+    }
+
     private class NoteGroupTable : Table<NoteGroup>
     {
         private NoteGroupTable(string name) : base(name) { }
