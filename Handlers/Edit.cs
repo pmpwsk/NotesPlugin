@@ -16,7 +16,7 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (note.IsFolder)
                     throw new BadRequestSignal();
-                string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
+                string filePath = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
                 page.Title = note.ParentId == null ? "Notes" : $"{note.Name} - Notes";
                 string parentLink = note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId);
                 page.Navigation.Add(note.IsFolder ? new Button("Back", parentLink, "right") : new ButtonJS("Back", $"Back('{parentLink}')", "right", id: "back"));
@@ -24,7 +24,7 @@ public partial class NotesPlugin : Plugin
                 if (id != "default")
                 {
                     page.Sidebar.Add(new ButtonElement(null, "Go up a level", parentLink));
-                    string parentFilePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
+                    string parentFilePath = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
                     var siblings = File.ReadAllLines(parentFilePath).Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).OrderByDescending(x => x.Value.IsFolder).ThenBy(x => x.Value.Name);
                     foreach (var sibling in siblings)
                         if (sibling.Key == id)
@@ -53,7 +53,7 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (note.IsFolder)
                     throw new BadRequestSignal();
-                var content = File.ReadAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt");
+                var content = File.ReadAllText($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt");
                 if (content == "")
                     req.Status = 201;
                 else await req.Write(content);
@@ -68,7 +68,7 @@ public partial class NotesPlugin : Plugin
                 if (note.IsFolder)
                     throw new BadRequestSignal();
                 notes.Lock();
-                File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt", await req.GetBodyText());
+                File.WriteAllText($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt", await req.GetBodyText());
                 note.Changed = DateTime.UtcNow;
                 notes.UnlockSave();
             } break;

@@ -22,7 +22,7 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (!note.IsFolder)
                     throw new BadRequestSignal();
-                string filePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
+                string filePath = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt";
                 page.Title = note.ParentId == null ? "Notes" : $"{note.Name} - Notes";
                 string parentLink = note.ParentId == null ? "/" : (note.ParentId == "default" ? "." : $"list?id=" + note.ParentId);
                 page.Navigation.Add(note.IsFolder ? new Button("Back", parentLink, "right") : new ButtonJS("Back", $"Back('{parentLink}')", "right", id: "back"));
@@ -30,7 +30,7 @@ public partial class NotesPlugin : Plugin
                 if (id != "default")
                 {
                     page.Sidebar.Add(new ButtonElement(null, "Go up a level", parentLink));
-                    string parentFilePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
+                    string parentFilePath = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
                     var siblings = File.ReadAllLines(parentFilePath).Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).OrderByDescending(x => x.Value.IsFolder).ThenBy(x => x.Value.Name);
                     foreach (var sibling in siblings)
                         if (sibling.Key == id)
@@ -61,7 +61,7 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (!note.IsFolder)
                     throw new BadRequestSignal();
-                if (File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == name))
+                if (File.ReadAllLines($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == name))
                     throw new HttpStatusSignal(302);
                 var n = new NoteItem(name, id, folder);
                 string nId;
@@ -69,10 +69,10 @@ public partial class NotesPlugin : Plugin
                     while (notes.Notes.ContainsKey(nId));
                 notes.Lock();
                 notes.Notes[nId] = n;
-                File.AppendAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{id}.txt", [ nId ]);
+                File.AppendAllLines($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{id}.txt", [ nId ]);
                 if (folder)
-                    File.WriteAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", []);
-                else File.WriteAllText($"../Notes/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", "");
+                    File.WriteAllLines($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", []);
+                else File.WriteAllText($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{nId}.txt", "");
                 notes.UnlockSave();
                 await req.Write($"id={nId}");
             } break;

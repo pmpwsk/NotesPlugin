@@ -4,16 +4,16 @@ public partial class NotesPlugin : Plugin
 {
     public NotesPlugin()
     {
-        Directory.CreateDirectory("../Notes");
+        Directory.CreateDirectory("../NotesPlugin.Profiles");
 
         //backwards compatibility
-        foreach (var userTableDir in new DirectoryInfo("../Notes").GetDirectories("*", SearchOption.TopDirectoryOnly))
+        foreach (var userTableDir in new DirectoryInfo("../NotesPlugin.Profiles").GetDirectories("*", SearchOption.TopDirectoryOnly))
         {
             var files = userTableDir.GetFiles("*", SearchOption.TopDirectoryOnly);
             foreach (var userId in files.Select(x => x.Name.Before('-')).Distinct())
-                Directory.CreateDirectory($"../Notes/{userTableDir.Name}/{userId}");
+                Directory.CreateDirectory($"../NotesPlugin.Profiles/{userTableDir.Name}/{userId}");
             foreach (var file in files)
-                file.MoveTo($"../Notes/{userTableDir.Name}/{file.Name.Before('-')}/{file.Name.After('-')}");
+                file.MoveTo($"../NotesPlugin.Profiles/{userTableDir.Name}/{file.Name.Before('-')}/{file.Name.After('-')}");
         }
     }
 }

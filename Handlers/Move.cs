@@ -22,7 +22,7 @@ public partial class NotesPlugin : Plugin
                 if (to != "default")
                 {
                     page.Sidebar.Add(new ButtonElement(null, "Go up a level", $"move?id={id}&to={target.ParentId}"));
-                    string parentFilePath = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{target.ParentId}.txt";
+                    string parentFilePath = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{target.ParentId}.txt";
                     var siblings = File.ReadAllLines(parentFilePath).Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).Where(x => x.Value.IsFolder).OrderBy(x => x.Value.Name);
                     foreach (var sibling in siblings)
                         if (sibling.Key == to)
@@ -33,7 +33,7 @@ public partial class NotesPlugin : Plugin
                 if (note.ParentId != to)
                     e.Add(new ButtonElementJS("Move here", null, "Move()", "green"));
                 page.AddError();
-                var items = File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).Where(x => x.Value.IsFolder).OrderBy(x => x.Value.Name);
+                var items = File.ReadAllLines($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Select(x => new KeyValuePair<string, NoteItem>(x, notes.Notes[x])).Where(x => x.Value.IsFolder).OrderBy(x => x.Value.Name);
                 foreach (var item in items)
                     e.Add(new ButtonElement(item.Value.Name, null, $"move?id={id}&to={item.Key}"));
                 if (!items.Any())
@@ -48,12 +48,12 @@ public partial class NotesPlugin : Plugin
                     throw new NotFoundSignal();
                 if (note.ParentId == to)
                     break;
-                if (File.ReadAllLines($"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == note.Name))
+                if (File.ReadAllLines($"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{to}.txt").Any(siblingId => notes.Notes.TryGetValue(siblingId, out var sibling) && sibling.Name == note.Name))
                     throw new HttpStatusSignal(302);
                 notes.Lock();
-                string file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
+                string file = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{note.ParentId}.txt";
                 File.WriteAllLines(file, File.ReadAllLines(file).Where(x => x != id));
-                file = $"../Notes/{req.UserTable.Name}/{req.User.Id}/{to}.txt";
+                file = $"../NotesPlugin.Profiles/{req.UserTable.Name}/{req.User.Id}/{to}.txt";
                 File.WriteAllLines(file, [.. File.ReadAllLines(file), id]);
                 note.ParentId = to;
                 notes.UnlockSave();

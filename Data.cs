@@ -5,7 +5,7 @@ namespace uwap.WebFramework.Plugins;
 
 public partial class NotesPlugin
 {
-    private readonly NoteGroupTable Table = NoteGroupTable.Import("Notes");
+    private readonly NoteGroupTable Table = NoteGroupTable.Import("NotesPlugin.Profiles");
 
     private NoteGroup GetOrCreate(string userId, string userTable)
     {
@@ -16,8 +16,8 @@ public partial class NotesPlugin
             notes = new NoteGroup();
             var note = new NoteItem("Notes", null, true);
             notes.Notes["default"] = note;
-            Directory.CreateDirectory($"../Notes/{userTable}/{userId}");
-            File.WriteAllLines($"../Notes/{userTable}/{userId}/default.txt", []);
+            Directory.CreateDirectory($"../NotesPlugin.Profiles/{userTable}/{userId}");
+            File.WriteAllLines($"../NotesPlugin.Profiles/{userTable}/{userId}/default.txt", []);
             Table[userTable + "_" + userId] = notes;
             return notes;
         }
@@ -60,12 +60,12 @@ public partial class NotesPlugin
 
         protected override IEnumerable<string> EnumerateDirectoriesToClear()
         {
-            yield return "../Notes";
+            yield return "../NotesPlugin.Profiles";
         }
 
         protected override IEnumerable<string> EnumerateOtherDirectories(TableEntry<NoteGroup> entry)
         {
-            yield return $"../Notes/{entry.Key.Replace('_', '/')}";
+            yield return $"../NotesPlugin.Profiles/{entry.Key.Replace('_', '/')}";
         }
     }
 
@@ -83,12 +83,12 @@ public partial class NotesPlugin
                 return;
             }
             if (note.IsFolder)
-                foreach (var child in File.ReadAllLines($"../Notes/{userTable}/{userId}/{noteId}.txt"))
+                foreach (var child in File.ReadAllLines($"../NotesPlugin.Profiles/{userTable}/{userId}/{noteId}.txt"))
                     Delete(userId, userTable, child, false);
             Notes.Remove(noteId);
             if (deleteFromParent)
-                File.WriteAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt", File.ReadAllLines($"../Notes/{userTable}/{userId}/{note.ParentId}.txt").Where(x => x != noteId));
-            File.Delete($"../Notes/{userTable}/{userId}/{noteId}.txt");
+                File.WriteAllLines($"../NotesPlugin.Profiles/{userTable}/{userId}/{note.ParentId}.txt", File.ReadAllLines($"../NotesPlugin.Profiles/{userTable}/{userId}/{note.ParentId}.txt").Where(x => x != noteId));
+            File.Delete($"../NotesPlugin.Profiles/{userTable}/{userId}/{noteId}.txt");
         }
     }
 
