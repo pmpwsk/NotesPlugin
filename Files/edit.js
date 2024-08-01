@@ -25,9 +25,9 @@ window.addEventListener("beforeunload", e => {
         return confirmationMessage;
     }
 });
-let incomingEvent = new EventSource(`changed-event${window.location.search}`);
-onbeforeunload = (event) => { incomingEvent.close(); };
-incomingEvent.onmessage = async (event) => {
+let changedEvent = new EventSource(`changed-event${window.location.search}`);
+onbeforeunload = (event) => { changedEvent.close(); };
+changedEvent.onmessage = async (event) => {
     if (event.data === "changed" && save.innerText === "Saved!")
         await Load();
 };

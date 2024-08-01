@@ -20,7 +20,7 @@ public partial class NotesPlugin : Plugin
 	public override string? GetFileVersion(string relPath)
 		=> relPath switch
 		{
-			"/edit.js" => "1722523356044",
+			"/edit.js" => "1722524773357",
 			"/icon.ico" => "1694963322000",
 			"/icon.png" => "1687982107000",
 			"/icon.svg" => "1695860848000",
