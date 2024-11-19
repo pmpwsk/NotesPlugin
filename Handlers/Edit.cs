@@ -32,14 +32,9 @@ public partial class NotesPlugin : Plugin
                         else page.Sidebar.Add(new ButtonElement(null, sibling.Value.Name, $"{(sibling.Value.IsFolder ? "list" : "edit")}?id={sibling.Key}"));
                 }
                 page.Scripts.Add(new Script("edit.js"));
-                page.Styles.Add(new CustomStyle(
-                    "div.editor { display: flex; flex-flow: column; }",
-                    "div.editor textarea { flex: 1 1 auto; }",
-                    "div.editor h1, div.editor h2, div.editor div.buttons { flex: 0 1 auto; }"
-                ));
                 page.AddError();
                 page.HideFooter = true;
-                e.Add(new LargeContainerElementIsoTop(note.Name, new TextArea("Loading...", null, "text", null, onInput: "TextChanged(); Resize();"), classes: "editor", id: "editor")
+                e.Add(new LargeContainerElementIsoTop(note.Name, new TextArea("Loading...", null, "editor", classes: "grow", onInput: "TextChanged()"))
                 {
                     Button = new ButtonJS("Saved!", $"Save()", null, id: "save")
                 });
